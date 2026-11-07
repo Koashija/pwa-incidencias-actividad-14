@@ -1,5 +1,5 @@
 // Service Worker: instalación, actualización, caché offline y notificaciones locales.
-const CACHE = 'alerta-campus-v6';
+const CACHE = 'alerta-campus-v7';
 const APP_SHELL = [
   './', './index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png',
   './imag1.png', './image2.png', './image3.png', './image4.png', './image5.png', './image6.png'

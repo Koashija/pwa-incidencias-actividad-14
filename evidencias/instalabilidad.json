@@ -1,0 +1,42 @@
+{
+  "url": "https://koashija.github.io/pwa-incidencias-actividad-14/",
+  "manifest": {
+    "url": "https://koashija.github.io/pwa-incidencias-actividad-14/manifest.json",
+    "errors": [],
+    "data": "{\n  \"name\": \"Registro de Incidencias\",\n  \"short_name\": \"Incidencias\",\n  \"description\": \"Reporta, guarda y sincroniza incidencias del campus.\",\n  \"lang\": \"es\",\n  \"dir\": \"ltr\",\n  \"id\": \"./index.html\",\n  \"start_url\": \"./index.html\",\n  \"scope\": \"./\",\n  \"display\": \"standalone\",\n  \"display_override\": [\"standalone\", \"minimal-ui\"],\n  \"orientation\": \"portrait\",\n  \"background_color\": \"#0F0E1A\",\n  \"theme_color\": \"#0F0E1A\",\n  \"categories\": [\"productivity\", \"utilities\"],\n  \"icons\": [\n    {\n      \"src\": \"icon-192.png\",\n      \"sizes\": \"192x192\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any\"\n    },\n    {\n      \"src\": \"icon-512.png\",\n      \"sizes\": \"512x512\",\n      \"type\": \"image/png\",\n      \"purpose\": \"any maskable\"\n    }\n  ]\n}\n",
+    "parsed": {
+      "scope": "https://koashija.github.io/pwa-incidencias-actividad-14/"
+    },
+    "manifest": {
+      "backgroundColor": "rgba(15,14,26,1)",
+      "description": "Reporta, guarda y sincroniza incidencias del campus.",
+      "display": "kStandalone",
+      "displayOverrides": [
+        "kStandalone",
+        "kMinimalUi"
+      ],
+      "icons": [
+        {
+          "url": "https://koashija.github.io/pwa-incidencias-actividad-14/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "url": "https://koashija.github.io/pwa-incidencias-actividad-14/icon-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ],
+      "id": "https://koashija.github.io/index.html",
+      "name": "Registro de Incidencias",
+      "orientation": "PORTRAIT",
+      "preferRelatedApplications": false,
+      "scope": "https://koashija.github.io/pwa-incidencias-actividad-14/",
+      "startUrl": "https://koashija.github.io/pwa-incidencias-actividad-14/index.html",
+      "themeColor": "rgba(15,14,26,1)"
+    }
+  },
+  "installability": {
+    "installabilityErrors": []
+  }
+}

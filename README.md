@@ -53,6 +53,7 @@ Mejoras aplicadas:
 ## Versionado y actualización
 
 - Versión inicial: 1.0.0, caché `alerta-campus-v6`.
+- Versión actualizada: 1.1.0, caché `alerta-campus-v7` y nuevo texto de bienvenida.
 - La aplicación detecta un Service Worker en espera y muestra el botón Actualizar aplicación.
 - Al aceptar la actualización, el nuevo Service Worker toma el control y recarga la PWA sin borrar IndexedDB.
 

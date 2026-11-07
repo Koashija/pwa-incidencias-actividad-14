@@ -4,7 +4,7 @@
   "description": "Reporta, guarda y sincroniza incidencias del campus.",
   "lang": "es",
   "dir": "ltr",
-  "id": "./index.html",
+  "id": "/pwa-incidencias-actividad-14/",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
