@@ -1,0 +1,15 @@
+{
+  "name": "alerta-campus-pwa",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PWA para registrar incidencias del campus",
+  "scripts": {
+    "start": "node server.js",
+    "test:e2e": "node tests/e2e.cjs",
+    "evidencias": "node tests/capturar-evidencias.cjs"
+  },
+  "devDependencies": {
+    "lighthouse": "13.6.0",
+    "playwright": "1.62.1"
+  }
+}

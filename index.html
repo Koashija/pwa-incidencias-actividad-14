@@ -4,8 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2A1F6B">
+<meta name="description" content="PWA para registrar, consultar y administrar incidencias del campus, incluso sin conexión.">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>Alerta Campus - Incidencias</title>
 <style>
 :root{
@@ -80,6 +82,11 @@ nav .cr img{width:50px;height:50px}
 .btn{display:flex;gap:10px;align-items:center;justify-content:center;width:100%;padding:16px;border:2px solid var(--ink);border-radius:14px;background:var(--vio);color:#fff;font-weight:800;font-size:14px;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .1s,box-shadow .1s}
 .btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
 .btn:disabled{opacity:.45;box-shadow:var(--shadow-sm);cursor:not-allowed;transform:none}
+.btn.small{padding:12px;font-size:12px}
+.hint{margin:10px 0 0;color:var(--mute);font-size:12px;line-height:1.45}
+.device-value{margin:10px 0 0;padding:10px 12px;border:2px dashed var(--line);border-radius:12px;color:var(--ink2);font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+.pwa-actions{display:grid;gap:10px}
+.version{margin:14px 0 0;text-align:center;color:var(--mute);font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 .spin .i{animation:r 1s linear infinite}
 @keyframes r{to{transform:rotate(360deg)}}
 
@@ -164,6 +171,9 @@ nav .dot{position:absolute;top:5px;right:calc(50% - 24px);min-width:18px;height:
 <symbol id="ic-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
 <symbol id="ic-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
 <symbol id="ic-pulse" viewBox="0 0 24 24"><path d="M3 12h4l3-7 4 14 3-7h4"/></symbol>
+<symbol id="ic-bell" viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></symbol>
+<symbol id="ic-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="ic-location" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="2"/></symbol>
 </svg>
 
 <div id="splash">
@@ -175,7 +185,7 @@ nav .dot{position:absolute;top:5px;right:calc(50% - 24px);min-width:18px;height:
   <div class="load"><i></i></div>
 </div>
 
-<div class="app">
+<main class="app">
   <div class="hero">
     <div class="bar">
       <div class="brand"><span class="lg"><svg class="i"><use href="#ic-alert"/></svg></span>Alerta Campus</div>
@@ -199,12 +209,22 @@ nav .dot{position:absolute;top:5px;right:calc(50% - 24px);min-width:18px;height:
           <div class="c"><div><b id="tot">0</b><br><small>total</small></div></div>
         </div>
         <div class="legend">
-          <div><i style="background:var(--mint)"></i><span><b id="okn">0</b> enviadas</span></div>
-          <div><i style="background:var(--sun)"></i><span><b id="pen">0</b> por enviar</span></div>
+          <div><i style="background:var(--mint)"></i><span><b id="okn">0</b> <span id="okLabel">enviadas</span></span></div>
+          <div><i style="background:var(--sun)"></i><span><b id="pen">0</b> <span id="penLabel">por enviar</span></span></div>
         </div>
       </div>
       <div style="height:18px"></div>
       <button class="btn" id="sync" type="button"><svg class="i"><use href="#ic-sync"/></svg><span id="synct">Sincronizar</span></button>
+    </div>
+    <div class="card">
+      <h3><svg class="i"><use href="#ic-bell"/></svg>Funciones PWA</h3>
+      <div class="pwa-actions">
+        <button class="btn small" id="install" type="button" hidden><svg class="i"><use href="#ic-down"/></svg><span>Instalar aplicación</span></button>
+        <button class="btn small" id="update" type="button" hidden><svg class="i"><use href="#ic-sync"/></svg><span>Actualizar aplicación</span></button>
+        <button class="btn small" id="notify" type="button"><svg class="i"><use href="#ic-bell"/></svg><span id="notifyText">Activar notificaciones</span></button>
+      </div>
+      <p class="hint" id="notifyHint">Recibe un aviso local cuando una incidencia queda pendiente o al probar esta función.</p>
+      <p class="version" id="version">Versión 1.0.0</p>
     </div>
     <div class="card">
       <p class="cr"><img src="image2.png" alt="" onerror="this.style.display='none'">Brisset Ariatna Hernández Cadena</p>
@@ -229,6 +249,10 @@ nav .dot{position:absolute;top:5px;right:calc(50% - 24px);min-width:18px;height:
         </div>
         <label class="l" for="d">Detalles</label>
         <textarea class="in" id="d" rows="3" placeholder="Lugar, hora y qué se observó"></textarea>
+        <label class="l">Ubicación del incidente</label>
+        <button class="btn ghost small" id="location" type="button"><svg class="i"><use href="#ic-location"/></svg><span id="locationText">Usar mi ubicación actual</span></button>
+        <p class="hint">Esta función solicita permiso del navegador y requiere HTTPS o localhost. Puedes guardar la incidencia sin ubicación.</p>
+        <div class="device-value" id="locationValue">Ubicación no agregada.</div>
         <div style="height:20px"></div>
         <div class="row2" id="frow"><button class="btn ghost" id="cancel" type="button" style="display:none"><svg class="i"><use href="#ic-x"/></svg>Cancelar</button>
         <button class="btn" id="save" type="submit"><svg class="i"><use href="#ic-check"/></svg><span id="savet">Guardar incidencia</span></button></div>
@@ -242,7 +266,7 @@ nav .dot{position:absolute;top:5px;right:calc(50% - 24px);min-width:18px;height:
     <div class="chips" id="chips"></div>
     <div id="list"></div>
   </section>
-</div>
+</main>
 
 <nav><div class="in2">
   <p class="cr"><img src="image4.png" alt="" onerror="this.style.display='none'">Johanan Baruc Pineda Mejía</p>
@@ -328,6 +352,8 @@ async function put(o){
 const $   = id => document.getElementById(id);
 const esc = s  => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ic  = n  => `<svg class="i"><use href="#ic-${n}"/></svg>`;
+const STATIC_HOST = location.hostname.endsWith('.github.io');
+const API_ENABLED = !STATIC_HOST;
 
 function uid(){
   try { if (crypto.randomUUID) return crypto.randomUUID(); } catch (_) {}
@@ -367,6 +393,60 @@ function toast(m){
 }
 
 // ============================================================
+// Notificaciones locales: se muestran mediante el Service Worker
+// ============================================================
+function notificationUI(){
+  if (!('Notification' in window)) {
+    $('notifyText').textContent = 'Notificaciones no compatibles';
+    $('notify').disabled = true;
+    $('notifyHint').textContent = 'Este navegador no admite notificaciones del sistema.';
+    return;
+  }
+  const p = Notification.permission;
+  $('notifyText').textContent = p === 'granted' ? 'Enviar notificación de prueba' : p === 'denied' ? 'Notificaciones bloqueadas' : 'Activar notificaciones';
+  $('notify').disabled = p === 'denied';
+  $('notifyHint').textContent = p === 'granted'
+    ? 'Los avisos locales están activos en este dispositivo.'
+    : p === 'denied' ? 'Actívalas desde la configuración de permisos del navegador.'
+    : 'Se solicitará permiso para mostrar avisos locales relevantes.';
+}
+
+async function localNotification(title, body){
+  if (!('Notification' in window) || Notification.permission !== 'granted') return false;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    await reg.showNotification(title, { body, icon: 'icon-192.png', badge: 'icon-192.png', tag: 'incidencias-local', renotify: true, data: { url: './index.html' } });
+    return true;
+  } catch (err) { console.warn('No se pudo mostrar la notificación:', err); return false; }
+}
+
+$('notify').onclick = async () => {
+  if (!('Notification' in window)) return notificationUI();
+  let p = Notification.permission;
+  if (p === 'default') p = await Notification.requestPermission();
+  notificationUI();
+  if (p === 'granted') {
+    await localNotification('Alerta Campus', 'Las notificaciones locales ya están activas.');
+    toast('Notificación de prueba enviada');
+  } else if (p === 'denied') toast('El permiso de notificaciones fue denegado');
+};
+
+let installPrompt = null;
+addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  installPrompt = event;
+  $('install').hidden = false;
+});
+$('install').onclick = async () => {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+  installPrompt = null;
+  $('install').hidden = true;
+};
+addEventListener('appinstalled', () => { $('install').hidden = true; toast('Aplicación instalada correctamente'); });
+
+// ============================================================
 // Render (READ)
 // ============================================================
 let q = '';
@@ -379,8 +459,8 @@ async function render(){
 
     $('tot').textContent = n; $('okn').textContent = ok; $('pen').textContent = pend;
     $('ring').setAttribute('stroke-dasharray', `${n ? 251.3 * ok / n : 0} 251.3`);
-    $('synct').textContent = pend ? `Sincronizar (${pend})` : 'Todo al día';
-    $('sync').disabled = !pend;
+    $('synct').textContent = API_ENABLED ? (pend ? `Sincronizar (${pend})` : 'Todo al día') : 'Datos guardados en este dispositivo';
+    $('sync').disabled = !API_ENABLED || !pend;
     $('dot').style.display = pend ? 'grid' : 'none';
     $('dot').textContent = pend;
 
@@ -402,10 +482,11 @@ async function render(){
     $('list').innerHTML = vis.map(i => `
       <article class="tk" style="--c:${COL[i.prioridad] || COL.Baja}">
         <div class="h"><b>${esc(i.titulo)}</b>
-          <span class="badge ${i.synced ? 'ok' : 'wait'}">${ic(i.synced ? 'cloud' : 'clock')}${i.synced ? 'Enviada' : 'Pendiente'}</span></div>
+          <span class="badge ${i.synced ? 'ok' : 'wait'}">${ic(i.synced ? 'cloud' : 'clock')}${i.synced ? (API_ENABLED ? 'Enviada' : 'Guardada') : 'Pendiente'}</span></div>
         ${i.descripcion ? `<p>${esc(i.descripcion)}</p>` : ''}
         <div class="meta"><span>${ic(ICO[i.prioridad] || 'flat')}${esc(i.prioridad || '')}</span>
-          <span>${ic('clock')}${i.fecha ? new Date(i.fecha).toLocaleString() : ''}</span></div>
+          <span>${ic('clock')}${i.fecha ? new Date(i.fecha).toLocaleString() : ''}</span>
+          ${i.ubicacion ? `<span title="Ubicación aproximada">${ic('pin')}${esc(i.ubicacion)}</span>` : ''}</div>
         <div class="acts">
           <button type="button" class="mini" data-a="edit" data-id="${esc(i.id)}">${ic('edit')}Editar</button>
           <button type="button" class="mini del" data-a="del" data-id="${esc(i.id)}">${ic('trash')}Eliminar</button>
@@ -422,7 +503,12 @@ $('q').addEventListener('input', e => { q = e.target.value; render(); });
 // ============================================================
 // Crear (CREATE) y Editar (UPDATE)
 // ============================================================
-let editId = null;
+let editId = null, ubicacionActual = null;
+function renderLocation(){
+  $('locationValue').textContent = ubicacionActual
+    ? `Ubicación agregada: ${ubicacionActual.lat.toFixed(5)}, ${ubicacionActual.lng.toFixed(5)} (precisión aprox. ${Math.round(ubicacionActual.accuracy)} m)`
+    : 'Ubicación no agregada.';
+}
 function formMode(editing){
   $('ftitle').textContent = editing ? 'Editar incidencia' : 'Nueva incidencia';
   $('savet').textContent  = editing ? 'Guardar cambios' : 'Guardar incidencia';
@@ -430,7 +516,7 @@ function formMode(editing){
   $('cancel').style.display = editing ? 'flex' : 'none';
   $('frow').style.gridTemplateColumns = editing ? '1fr 1fr' : '1fr';
 }
-function resetForm(){ editId = null; $('f').reset(); formMode(false); }
+function resetForm(){ editId = null; ubicacionActual = null; $('f').reset(); formMode(false); renderLocation(); }
 
 async function startEdit(id){
   const it = (await all()).find(x => x.id === id);
@@ -438,6 +524,8 @@ async function startEdit(id){
   editId = id;
   $('t').value = it.titulo;
   $('d').value = it.descripcion || '';
+  ubicacionActual = it.ubicacionDatos || null;
+  renderLocation();
   const r = document.querySelector(`input[name=p][value="${it.prioridad}"]`); if (r) r.checked = true;
   formMode(true);
   show('new');
@@ -445,6 +533,20 @@ async function startEdit(id){
   $('sub').textContent = 'Modifica los datos y guarda los cambios.';
 }
 $('cancel').onclick = () => { resetForm(); show('list'); };
+
+$('location').onclick = () => {
+  if (!('geolocation' in navigator)) return toast('La geolocalización no es compatible en este navegador');
+  $('location').disabled = true;
+  $('locationText').textContent = 'Solicitando permiso…';
+  navigator.geolocation.getCurrentPosition(pos => {
+    ubicacionActual = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy };
+    renderLocation(); toast('Ubicación agregada');
+    $('location').disabled = false; $('locationText').textContent = 'Actualizar mi ubicación';
+  }, err => {
+    const msg = { 1:'Permiso de ubicación denegado', 2:'Ubicación no disponible', 3:'Tiempo de espera agotado' }[err.code] || 'No se pudo obtener la ubicación';
+    toast(msg); $('location').disabled = false; $('locationText').textContent = 'Usar mi ubicación actual';
+  }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+};
 
 // Al entrar a "Nueva" desde el menú se sale del modo edición
 document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => {
@@ -460,17 +562,19 @@ $('f').addEventListener('submit', async e => {
   const campos = {
     titulo,
     prioridad: document.querySelector('input[name=p]:checked').value,
-    descripcion: $('d').value.trim()
+    descripcion: $('d').value.trim(),
+    ubicacionDatos: ubicacionActual,
+    ubicacion: ubicacionActual ? `${ubicacionActual.lat.toFixed(5)}, ${ubicacionActual.lng.toFixed(5)}` : ''
   };
   try {
     let item, msg;
     if (editId) {
       const prev = (await all()).find(x => x.id === editId);
       if (!prev) throw new Error('El registro ya no existe');
-      item = { ...prev, ...campos, updated: ahora, synced: false };
+      item = { ...prev, ...campos, updated: ahora, synced: !API_ENABLED };
       msg = 'Cambios guardados';
     } else {
-      item = { id: uid(), ...campos, fecha: ahora, updated: ahora, synced: false, onServer: false };
+      item = { id: uid(), ...campos, fecha: ahora, updated: ahora, synced: !API_ENABLED, onServer: false };
       msg = navigator.onLine ? 'Incidencia guardada' : 'Guardada sin conexión';
     }
     await put(item);
@@ -479,6 +583,7 @@ $('f').addEventListener('submit', async e => {
     filter = 'all'; q = ''; $('q').value = '';
     await render();
     toast(msg);
+    if (!item.synced) localNotification('Incidencia pendiente', `“${item.titulo}” se guardó y se enviará al recuperar conexión.`);
     show('list');
     sync();
   } catch (err) {
@@ -503,7 +608,8 @@ $('yes').onclick = async () => {
   try {
     const it = (await all()).find(x => x.id === id);
     if (!it) return;
-    await put({ ...it, deleted: true, synced: false, updated: new Date().toISOString() });
+    if (API_ENABLED) await put({ ...it, deleted: true, synced: false, updated: new Date().toISOString() });
+    else await del(id);
     if (editId === id) resetForm();
     await render();
     toast('Incidencia eliminada');
@@ -518,7 +624,7 @@ $('list').addEventListener('click', async e => {
   if (b.dataset.a === 'edit') return startEdit(id);
   const it = (await all()).find(x => x.id === id); if (!it) return;
   delId = id;
-  $('dlgt').textContent = '«' + it.titulo + '» se eliminará de este dispositivo y del servidor.';
+  $('dlgt').textContent = '«' + it.titulo + '» se eliminará ' + (API_ENABLED ? 'de este dispositivo y del servidor.' : 'de este dispositivo.');
   $('dlg').classList.add('on');
 });
 
@@ -526,10 +632,12 @@ $('list').addEventListener('click', async e => {
 // Sincronización con el servidor (fetch)
 // ============================================================
 const API = '/api/incidencias', HDR = { 'Content-Type': 'application/json' };
-const payload = i => ({ id: i.id, titulo: i.titulo, prioridad: i.prioridad, descripcion: i.descripcion, fecha: i.fecha, updated: i.updated || i.fecha });
+const payload = i => ({ id: i.id, titulo: i.titulo, prioridad: i.prioridad, descripcion: i.descripcion, ubicacion: i.ubicacion || '', ubicacionDatos: i.ubicacionDatos || null, fecha: i.fecha, updated: i.updated || i.fecha });
 let syncing = false;
 async function sync(){
-  if (syncing || !navigator.onLine) return;
+  if (!API_ENABLED) return;
+  if (syncing) return;
+  if (!navigator.onLine) { toast('La sincronización requiere conexión a internet'); return; }
   syncing = true; $('sync').classList.add('spin');
   let sent = 0;
   try {
@@ -586,11 +694,29 @@ addEventListener('offline', net);
 // Inicio
 // ============================================================
 net();
+renderLocation();
+notificationUI();
+$('okLabel').textContent = API_ENABLED ? 'enviadas' : 'guardadas';
+$('penLabel').textContent = API_ENABLED ? 'por enviar' : 'pendientes';
 render().then(sync);
 setTimeout(() => $('splash').classList.add('hide'), 1900);
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(console.error);
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    const showUpdate = () => { $('update').hidden = false; toast('Hay una nueva versión disponible'); };
+    if (reg.waiting) showUpdate();
+    reg.addEventListener('updatefound', () => {
+      const worker = reg.installing;
+      if (worker) worker.addEventListener('statechange', () => {
+        if (worker.state === 'installed' && navigator.serviceWorker.controller) showUpdate();
+      });
+    });
+    $('update').onclick = () => reg.waiting?.postMessage({ type: 'SKIP_WAITING' });
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) { refreshing = true; location.reload(); }
+    });
+  }).catch(err => { console.error(err); toast('No se pudo activar el modo sin conexión'); });
 }
 </script>
 </body>

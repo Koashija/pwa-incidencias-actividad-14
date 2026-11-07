@@ -2,14 +2,14 @@
 const http=require('http'),fs=require('fs'),path=require('path');
 const DB='db.json';let data=fs.existsSync(DB)?JSON.parse(fs.readFileSync(DB)||'[]'):[];
 const save=()=>fs.writeFileSync(DB,JSON.stringify(data,null,2));
-const types={'.html':'text/html; charset=utf-8','.js':'text/javascript','.json':'application/json','.svg':'image/svg+xml'};
+const types={'.html':'text/html; charset=utf-8','.js':'text/javascript','.json':'application/json','.svg':'image/svg+xml','.png':'image/png'};
 const json=(res,code,obj)=>{res.statusCode=code;res.setHeader('Content-Type','application/json');res.end(JSON.stringify(obj));};
 const body=req=>new Promise(ok=>{let b='';req.on('data',c=>b+=c);req.on('end',()=>{try{ok(JSON.parse(b||'{}'))}catch(_){ok(null)}});});
 
 // Crear o actualizar (idempotente): el id lo genera el cliente, así un reintento no duplica
 function upsert(it){
   const k=data.findIndex(x=>x.id===it.id);
-  const clean={id:it.id,titulo:it.titulo,prioridad:it.prioridad,descripcion:it.descripcion||'',fecha:it.fecha,updated:it.updated||it.fecha,synced:true};
+  const clean={id:it.id,titulo:it.titulo,prioridad:it.prioridad,descripcion:it.descripcion||'',ubicacion:it.ubicacion||'',ubicacionDatos:it.ubicacionDatos||null,fecha:it.fecha,updated:it.updated||it.fecha,synced:true};
   if(k<0){data.push(clean);return 'created';}
   if((clean.updated||'')>=(data[k].updated||'')){data[k]=clean;return 'updated';}
   return 'ignored';                       // llegó una versión más vieja: se conserva la del servidor
@@ -36,5 +36,7 @@ http.createServer(async(req,res)=>{
   let f=url==='/'?'/index.html':url;f=path.join(__dirname,path.normalize(f));
   if(!f.startsWith(__dirname)){res.statusCode=403;return res.end('403');}
   fs.readFile(f,(e,c)=>{if(e){res.statusCode=404;return res.end('404');}
-    res.setHeader('Content-Type',types[path.extname(f)]||'text/plain');res.end(c);});
+    const ext=path.extname(f);
+    res.setHeader('Cache-Control',ext==='.html'||ext==='.js'?'no-cache':'public, max-age=86400');
+    res.setHeader('Content-Type',types[ext]||'text/plain');res.end(c);});
 }).listen(3000,()=>console.log('http://localhost:3000'));
